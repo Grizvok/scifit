@@ -168,6 +168,9 @@ knex('clients.thigh').insert({user_id: user, thigh: measurement, date: new Date(
     res.end();
 });
 
+router.delete('/chest', function(req, res) {
+  
+});
 //this is where endpoints for updating client information will soon go
 //and other really cool shit
 

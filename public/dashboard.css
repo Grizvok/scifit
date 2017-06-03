@@ -8,6 +8,9 @@
     text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 }
 
+.hidden {
+    display:none;
+}
 .current-info {
     float:left;
     margin-top: 160px;
@@ -19,6 +22,10 @@
 
 .current {
     margin-bottom: 75px;
+}
+
+.addnewdata {
+    margin-bottom: 50px;
 }
 
 .container2 {
