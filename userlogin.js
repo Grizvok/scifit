@@ -1,26 +1,13 @@
-var express = require('express');
-var router = express.Router();
 var pg = require('pg');
 var scrypt = require('scrypt-for-humans');
-var session = require('express-session');
 var conString = 'postgres://postgres:grizvok5@localhost:5432/scifit';
 var Promise = require('bluebird');
+var session = require('express-session');
 
 
-router.get('/', function(req, res) {
-    if (req.session.user) {
-        res.redirect('/dashboard');
-    } else if (!req.session.user) {
-    res.render('login', {
-	styles: '<link rel="stylesheet" type="text/css" href="/register.css">'
-    });
-   }
-});
 
-router.post('/', function(req, res) {
-
-    
-    var userId = req.body.username;
+exports.userLogin = function(req, res) {
+    var userId = req.body.user;
     var pw = req.body.password;
 
     pg.connect(conString, function(err, client, done) {
@@ -43,6 +30,4 @@ router.post('/', function(req, res) {
             }
         });
     });
-});
-
-module.exports = router;
+}    

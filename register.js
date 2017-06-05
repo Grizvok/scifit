@@ -7,6 +7,7 @@ var conString = 'postgres://postgres:grizvok5@localhost:5432/scifit';
 var Promise = require('bluebird');
 var knex = require('./knex');
 var createUser = require('./createuser');
+var userlogin = require('./userlogin');
 
 
 router.get('/', function(req, res) {
@@ -29,10 +30,10 @@ router.post('/', function(req, res) {
         req.session.errors = errors;
         req.session.success = false;
         res.redirect('/register');
-        return;
     }
 
-    function infoValidator(err, result) {
+    function infoValidator(err, callback) {
+        console.log('validator ran');
         req.check('user', 'Invalid user name').isLength({
         min: 5
     });
@@ -41,36 +42,6 @@ router.post('/', function(req, res) {
         req.check('gender', 'Please choose a gender').isLength({
         min: 1
      });
-
-    }
-
-
-    function doesUserExist(user, callback) {
-        pg.connect(conString, function(err, client, done) {
-            client.query('SELECT user_id FROM clients.users where user_id=$1', [req.body.user], function(err, result) {
-                if (err) {
-                    callback(err, null);
-                    console.log('error fetching client from pool', err);
-                    return;
-                } else if (result.rowCount === 1) {
-                    callback(null, false);
-                    repeatedUser();
-                    return;
-                }
-                infoValidator();
-            });
-        });
-
-       function infoValidator(err, result) {
-        req.check('user', 'Invalid user name').isLength({
-        min: 5
-    });
-        req.check('password', 'Password is invalid').isLength({min: 5});
-        req.check('password', 'Passwords do not match').equals(req.body.confirmPassword);
-        req.check('gender', 'Please choose a gender').isLength({
-        min: 1
-     });
-     
 
         var errors = req.validationErrors();
         if (errors) {
@@ -84,9 +55,40 @@ router.post('/', function(req, res) {
             var gender = req.body.gender;
             callback(null, true);
 
-
         }
+
     }
+
+
+    function doesUserExist(user, callback) {
+        pg.connect(conString, function(err, client, done) {
+            client.query('SELECT user_id FROM clients.users where user_id=$1', [req.body.user], function(err, result) {
+                if (err) {
+                    callback(err, null);
+                    console.log('error fetching client from pool', err);
+                    //return;
+                } else if (result.rowCount === 1) {
+                    callback(null, false);
+                    //return;
+                } else if (result.rowCount === 0) {
+                    callback(null, true);
+                }
+            });
+        });
+
+
+        /*var errors = req.validationErrors();
+        if (errors) {
+            req.session.errors = errors;
+            req.session.success = false;
+            res.redirect('/register');
+        } else {
+            req.session.success = true;
+            var userId = req.body.user;
+            var pw = req.body.password;
+            var gender = req.body.gender;
+
+        }*/
 };
 
 doesUserExist(req.body.user, function(err, result) {
@@ -95,28 +97,42 @@ doesUserExist(req.body.user, function(err, result) {
     } else if (result === false) {
         repeatedUser();
         console.log('false');
-    } else if (result === true) {
-        infoValidator();
-        console.log('true');
+        return;
+    } else {
+        infoValidator(null, function (err, result) {
+            var userId = req.body.user;
+            var pw = req.body.password;
+            var gender = req.body.gender;
+        Promise.try(function() {
+        return scrypt.hash(pw);
+    }).then(function(hash) {
+        var myHash = hash;
+
+
+        pg.connect(conString, function(err, client, done) {
+            var queryText = 'INSERT INTO clients.users (user_id, password, gender) VALUES ($1, $2, $3)';
+            if (err) {
+                console.log('error fetching client from pool', err);
+            }
+            var query = client.query(queryText, [userId, myHash, gender], function(err, result) {
+                if (err) {
+                    console.log('There was an error performing query', err);
+                }
+                query.on('end', function(result) {
+                    console.log(result);
+                    userlogin.userLogin(req, res);
+                });
+            });
+        });
+    });
+        });
     }
 });
 
 
 
 
-/*req.check('user', 'Invalid user name').isLength({
-    min: 5
-});
-req.check('password', 'Password is invalid').isLength({
-    min: 5
-}).equals(req.body.confirmPassword);
-req.check('gender', 'Please choose a gender').isLength({
-    min: 1
-});
-    
-
-
-var errors = req.validationErrors();
+/*var errors = req.validationErrors();
 if (errors) {
     req.session.errors = errors;
     req.session.success = false;
@@ -147,8 +163,8 @@ if (errors) {
         });
     });
 }
-
 */
+
 });
 
 module.exports = router;
