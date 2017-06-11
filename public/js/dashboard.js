@@ -45,6 +45,7 @@ function chartChest() {
 }
 
 
+
 function chartBicep() {
     $('.chart-menu').removeClass('menu-active');
     $('.bicep-menu').addClass('menu-active');
@@ -209,6 +210,19 @@ function chartThigh() {
     });
   });
 }
+
+$(document).keydown(function(e) { 
+  console.log(e.keyCode);
+    if (e.keyCode == 27) { 
+      $('.modal').close();
+      } 
+});
+
+$(function() {
+  $('.addnewdata').on('click', function() {
+    $('.modal').addClass('active');
+     });
+  });
 
 $(function() {
   chartChest();

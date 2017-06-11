@@ -33,32 +33,21 @@
 </svg>
 
 <div class="infocontainer child">
-<div class="bodypart">chest circumference (inches)</div>
-<p class="addnewdata">+ Add new chest data</p>
+<p class="addnewdata">+ Add new measurement</p>
 <form class="chest-form hidden" action="/dashboard/chest" method="post">
 <input class="measure chest" type="number" name="chest"/>
 </form>
-<div class="bodypart">bicep circumference (inches)</div>
-<p class="addnewdata">+ Add new bicep data</p>
-<form class="bicep-form hidden" action="/dashboard/bicep" method="post">
-<input class="measure bicep" type="number" name="bicep"/>
-</form>
-<div class="bodypart">waist circumference (inches)</div>
-<p class="addnewdata">+ Add new waist data</p>
-<form class="waist-form hidden" action="/dashboard/waist" method="post">
-<input class="measure waist" type="number" name="waist"/>
-</form>
-<div class="bodypart">hip circumference (inches)</div>
-<p class="addnewdata">+ Add new hip data</p>
-<form class="hip-form hidden" action="/dashboard/hip" method="post">
-<input class="measure hip" type="number" name="hip"/>
-</form>
-<div class="bodypart">thigh circumference (inches)</div>
-<p class="addnewdata">+ Add new thigh data</p>
-<form class="thigh-form hidden" action="/dashboard/thigh" method="post">
-<input class="measure thigh" type="number" name="thigh"/>
-</form>
 </div>
+</div>
+</div>
+<div class="modal">
+<div class="form">
+<form action ="" method="post" class="login-form">
+    <input type="text" placeholder="username" name="username"/>
+    <input type="password" placeholder="password" name="password"/>
+    <button>log in</button>
+    <p class="message">Not registered? <a href="/register">Create an account</a></p>
+</form>   
 </div>
 </div>
 
